@@ -1,0 +1,105 @@
+{% extends 'nav.html' %}
+{% block checkout %}
+<div class="alert alert-warning" role="alert"> Chechout page</div>
+
+<div class="container"> 
+    <div class="col my-4">
+        <h2>Step-1 my cart express checkout -review your items</h2>
+        <div class="my-4">
+            <ul class="my-4" id='items'>
+            </ul>   
+        <nav aria-label='breadcrumb'>
+            <ol class="breadcrumb mt-3">
+                <li class="breadcrumb-item active" aria-content='page'>Your cart total is <b>£ <span id='totalprice'></span> <span id='amount'></span></b>. Enter your details below</li>
+                <li></li>
+            </ol>
+
+        </nav>    
+        </div>
+    </div>
+    <div class="col my-4">
+        <h2>Step-2 Enter your details</h2>
+        <form action="/checkout/" method='post'>{% csrf_token %}
+            <input type="hidden" name='itemsJson' id='itemsJson'>
+            <input type="hidden" name='amt' id='amt'>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="name">Name</label>
+                    <input type="text" class='form-control' id='name' name='name' placeholder='name' required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="email">Email</label>
+                    <input type="email" class='form-control' id='email' name='email' placeholder='Email' value='{{user.email}}' required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="address1">Address</label>
+                    <input type="text" class='form-control' id='address1' name='address1' placeholder='Address' required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="address2">Address line 2</label>
+                    <input type="text" class='form-control' id='address2' name='address2' placeholder='Address' required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="city">City</label>
+                    <input type="text" class='form-control' id='city' name='city' placeholder='city' required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="state">State</label>
+                    <input type="text" class='form-control' id='state' name='state' placeholder='Address' required>
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="zip_code">Postal code</label>
+                    <input type="text" class='form-control' id='zip_code' name='zip_code' placeholder='Postal code' required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="phone">Phone number</label>
+                    <input type="text" class='form-control' id='phone' name='phone' placeholder='phone number' required>
+                </div>
+            </div>
+            <button type='submit' class="btn btn-success btn-sm btn-block col-md-4" > place order</button>
+        </form>
+    </div>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> 
+
+<script>
+if (localStorage.getItem('cart')==null){
+    var cart={};
+}else{
+    cart=JSON.parse(localStorage.getItem('cart'));
+}
+console.log(cart)
+var sum=0;
+var totalprice=0;
+if ($.isEmptyObject(cart)){
+    mystr=`<p>Your cart is embty</p>`;
+    $('#items').append(mystr);
+}else{
+    for(item in cart){
+        let name=cart[item][1];
+        let qty=cart[item][0];
+        let itemprice=cart[item][2];
+        sum=sum+qty;
+        totalprice=totalprice+qty*itemprice;
+        mystr=`<li class="list-list-group-item d-flex justify-content-evenly">${name} <p> Price:£ ${itemprice}</p>     <span class='padge padge-success'>Qty:${qty}</span></li>`;
+        $('#items').append(mystr);
+    }
+    document.getElementById('totalprice').innerHTML=totalprice;
+    document.getElementById('cart').innerHTML=sum;
+    $('#itemsJson').val(JSON.stringify(cart));
+    $('#amt').val(totalprice);
+localStorage.setItem('cart',JSON.stringify({}))   
+}
+
+</script>
+
+{% endblock checkout %}
